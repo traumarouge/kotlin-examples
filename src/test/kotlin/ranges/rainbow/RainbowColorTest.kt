@@ -4,14 +4,19 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.Arguments.*
+import org.junit.jupiter.params.provider.MethodSource
 
 import ranges.rainbow.RainbowColor.*
 import java.lang.IllegalArgumentException
+import java.util.stream.Stream
 
 class RainbowColorTest {
 
     @Test
-    fun rangeIsEmpty() {
+    fun closedRangeIsEmpty() {
         assertTrue((VIOLET..RED).isEmpty())
         assertTrue((RED downTo VIOLET).isEmpty())
     }
@@ -24,79 +29,32 @@ class RainbowColorTest {
         assertThrows<IllegalArgumentException> { VIOLET downTo RED step -1 }
     }
 
-    @Test
-    fun iterateProgression() {
+    @ParameterizedTest
+    @MethodSource("iterateProgressionArgumentsProvider")
+    fun iterateProgression(progression: RainbowColorProgression, expectedRainbowColors: List<RainbowColor>) {
         val rainbowColors = arrayListOf<RainbowColor>()
-        for (color in RED..VIOLET) {
+
+        for (color in progression) {
             rainbowColors.add(color)
         }
 
-        assertEquals(listOf(RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET), rainbowColors)
-
-        rainbowColors.clear()
-        for (color in ORANGE..INDIGO) {
-            rainbowColors.add(color)
-        }
-
-        assertEquals(listOf(ORANGE, YELLOW, GREEN, BLUE, INDIGO), rainbowColors)
-
-        rainbowColors.clear()
-        for (color in VIOLET..VIOLET) {
-            rainbowColors.add(color)
-        }
-
-        assertEquals(listOf(VIOLET), rainbowColors)
-
-        rainbowColors.clear()
-        for (color in RED..VIOLET step 2) {
-            rainbowColors.add(color)
-        }
-
-        assertEquals(listOf(RED, YELLOW, BLUE, VIOLET), rainbowColors)
-
-        rainbowColors.clear()
-        for (color in INDIGO..VIOLET step 2) {
-            rainbowColors.add(color)
-        }
-
-        assertEquals(listOf(INDIGO), rainbowColors)
+        assertEquals(expectedRainbowColors, rainbowColors)
     }
 
-    @Test
-    fun iterateDownToProgression() {
-        val rainbowColors = arrayListOf<RainbowColor>()
-        for (color in VIOLET downTo RED) {
-            rainbowColors.add(color)
-        }
+    companion object {
+        @JvmStatic
+        fun iterateProgressionArgumentsProvider() = Stream.of(
+                arguments(RED..VIOLET, listOf(RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET)),
+                arguments(RED..VIOLET step 2, listOf(RED, YELLOW, BLUE, VIOLET)),
+                arguments(ORANGE..YELLOW, listOf(ORANGE, YELLOW)),
+                arguments(INDIGO..VIOLET step 2, listOf(INDIGO)),
+                arguments(VIOLET..VIOLET, listOf(VIOLET)),
 
-        assertEquals(listOf(VIOLET, INDIGO, BLUE, GREEN, YELLOW, ORANGE, RED), rainbowColors)
-
-        rainbowColors.clear()
-        for (color in INDIGO downTo ORANGE) {
-            rainbowColors.add(color)
-        }
-
-        assertEquals(listOf(INDIGO, BLUE, GREEN, YELLOW, ORANGE), rainbowColors)
-
-        rainbowColors.clear()
-        for (color in RED downTo RED) {
-            rainbowColors.add(color)
-        }
-
-        assertEquals(listOf(RED), rainbowColors)
-
-        rainbowColors.clear()
-        for (color in VIOLET downTo RED step 2) {
-            rainbowColors.add(color)
-        }
-
-        assertEquals(listOf(VIOLET, BLUE, YELLOW, RED), rainbowColors)
-
-        rainbowColors.clear()
-        for (color in ORANGE downTo RED step 2) {
-            rainbowColors.add(color)
-        }
-
-        assertEquals(listOf(ORANGE), rainbowColors)
+                arguments(VIOLET downTo RED, listOf(VIOLET, INDIGO, BLUE, GREEN, YELLOW, ORANGE, RED)),
+                arguments(VIOLET downTo RED step 2, listOf(VIOLET, BLUE, YELLOW, RED)),
+                arguments(YELLOW downTo ORANGE, listOf(YELLOW, ORANGE)),
+                arguments(ORANGE downTo RED step 2, listOf(ORANGE)),
+                arguments(RED downTo RED, listOf(RED))
+        )
     }
 }
