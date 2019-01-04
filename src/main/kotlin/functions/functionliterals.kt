@@ -27,6 +27,13 @@ class MyFunction : () -> Unit {
     }
 }
 
+// labeled return required to return from lambda before the last
+// expression in its body is reached (which is the return value)
+val getMessage = lambda@{ code: Int ->
+    if (code !in 200..299) return@lambda "ERROR: $code"
+
+    "OK" // last expression is return value
+}
 
 fun main(args: Array<String>) {
     greet()
@@ -41,6 +48,7 @@ fun main(args: Array<String>) {
     println(square3(4))
     producePrinter3()()
 
-    val function = MyFunction()
-    function()
+    MyFunction()()
+
+    println(getMessage(500))
 }
