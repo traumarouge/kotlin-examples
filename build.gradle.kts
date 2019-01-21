@@ -21,6 +21,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.jayway.jsonpath:json-path:2.4.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
